@@ -28,6 +28,8 @@ These scripts are designed to be executed during startup and deletes user inform
 
 _windows-profile-picture-removal_ can be used to quickly remove profile pictures from computers with pictures due to people logging into Windows and Microsoft. This script can be  disabled until a profile picture is required to be deleted. Instructions on how to enable and disable can be found [here](#how-to-enable-and-disable-scripts).
 
+### 15-minutes-
+
 ### installer-scripts
 
 The scripts found in _installer-scripts_ are used to simplify the install process for the other scripts. A seperate folder is used instead of dividing the install scripts based on usage to simplify the main install script as well as enabling individual downloads.
