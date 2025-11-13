@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository is a collection of simple scripts used in a local organization called XP Ängelholm. These are structured to be used by people with limited technical abilities, therefore advanced tools such as applications are contained in seperate repositories.
+This repository is a collection of simple scripts used in a local organisation called XP Ängelholm to simplify administrative tasks as well as to enhance security, e.g by removing user details when a user signs out. These are structured to be used by people with limited technical abilities, therefore are advanced tools such as applications contained in seperate repositories. 
 
 ## Scripts
 
