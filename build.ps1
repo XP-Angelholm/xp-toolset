@@ -10,13 +10,16 @@ function CopyWithOverwrite {
         return
     }
 
+
     if (Test-Path -Path $destinationDirectory) {
         Remove-Item -Path $destinationDirectory -Recurse -Force
         Write-Host "Removed existing directory: $destinationDirectory"
     }
 
-    Copy-Item -Path $sourceDirectory -Destination $destinationDirectory -Recurse
-    Write-Host "Copied $sourceDirectory to $destinationDirectory"
+    # Ensure destination directory exists, then copy the CONTENTS of source into it
+    New-Item -Path $destinationDirectory -ItemType Directory -Force | Out-Null
+    Copy-Item -Path (Join-Path -Path $sourceDirectory -ChildPath '*') -Destination $destinationDirectory -Recurse -Force
+    Write-Host "Copied contents of $sourceDirectory to $destinationDirectory"
 
     if ($deleteSource -eq $true) {
         Remove-Item -Path $sourceDirectory -Recurse -Force
@@ -29,9 +32,17 @@ $distributionPath = "distribution"
 CopyWithOverwrite -sourceDirectory "./scripts" -destinationDirectory "$distributionPath/scripts"
 CopyWithOverwrite -sourceDirectory ".\installer-scripts" -destinationDirectory "$distributionPath/installer-scripts"
 
-$psFiles += Get-ChildItem -Path "$distributionPath/scripts" -Filter "*.ps1" -Recurse
-
-Invoke-Expression "ps2exe main-installer.ps1 $distributionPath\main-installer.exe -noConsole"
+try {
+    if (Get-Command ps2exe -ErrorAction SilentlyContinue) {
+        & ps2exe 'main-installer.ps1' "$distributionPath\main-installer.exe"
+    }
+    else {
+        Write-Host "ps2exe not found; skipping EXE generation. Install the ps2exe module to enable this step."
+    }
+}
+catch {
+    Write-Host "ps2exe generation failed: $_"
+}
 
 $zipPath = "$distributionPath.zip"
 if (Test-Path -Path $zipPath) {

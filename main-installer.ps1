@@ -2,19 +2,27 @@ function Invoke-InstallerScripts {
     param (
         [string]$Directory
     )
+    # Find all PowerShell installer scripts recursively
+    $scripts = Get-ChildItem -Path $Directory -Filter "*.ps1" -Recurse -File
 
-    $scripts = Get-ChildItem -Path $Directory -Filter "*.*" | Where-Object { $_.Extension -in (".ps1") }
+    $totalNumberOfScripts = $scripts.Count
+    if ($totalNumberOfScripts -eq 0) {
+        Write-Host "No installer scripts found in: $Directory"
+        return
+    }
 
-    $totalScripts = $scripts.Count
     $currentScriptIndex = 0
 
     foreach ($script in $scripts) {
         try {
-            Write-Progress -Status "Running installer scripts..." -Activity "Executing: $($script.Name)" -PercentComplete (($currentScriptIndex / $totalScripts) * 100)
             $currentScriptIndex++
+            $percent = [int](($currentScriptIndex / $totalNumberOfScripts) * 100)
+            Write-Progress -Status "Running installer scripts..." -Activity "Executing: $($script.Name)" -PercentComplete $percent
 
             if ($script.Extension -eq ".ps1") {
-                Start-Process powershell -ArgumentList $script.FullName -NoNewWindow
+                # Run each installer script with a clean profile and bypass execution policy, wait for completion
+                $arg = "-NoProfile -ExecutionPolicy Bypass -File `"$($script.FullName)`""
+                Start-Process -FilePath "powershell" -ArgumentList $arg -WorkingDirectory $script.DirectoryName -NoNewWindow -Wait
             }
 
             Write-Host "Completed script: $($script.FullName)"
