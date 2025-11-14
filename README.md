@@ -79,7 +79,7 @@ The build process is initiated by executing _build.ps1_ and the latest build is 
 
 A release is created by following these steps:
 
-1. Create a commit, starting with any of the keywords found below and adhering to this pattern `<the desired keyword>: <the commit message>`.
+1. Create a traditional commit, starting with any of the keywords found below and adhering to this pattern `<the desired keyword>: <the commit message>`.
 2. Execute `git tag v<the version number>`.
 3. Execute `git push <the name of the remote> <the version number>`.
 
