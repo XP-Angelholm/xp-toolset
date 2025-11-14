@@ -34,6 +34,13 @@ jobs:
             Write-Host "Distribution folder does not exist!"
           }
 
+      - name: Create distribution ZIP with selected content
+        run: |
+          $zipPath = "distribution.zip"
+          if (Test-Path $zipPath) { Remove-Item $zipPath }
+          Compress-Archive -Path "distribution\main installer", "distribution\installer-scripts", "distribution\scripts" -DestinationPath $zipPath
+          Write-Host "Created $zipPath with selected folders"
+
       - name: Generate Release Notes
         id: release_notes
         run: |
@@ -45,7 +52,7 @@ jobs:
           $others = ""
           foreach ($line in $changes) {
             if ($line -match "BREAKING CHANGE") {
-              $breaking += "`n⚠️ $line"
+              $breaking += "`n- breaking: $line"
             } elseif ($line -match "feat:") {
               $features += "`n- Feature: $line"
             } elseif ($line -match "fix:") {
@@ -66,7 +73,7 @@ jobs:
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name}}
+          tag: ${{ github.ref_name }}
         run: |
           gh release create $tag `
           --repo=$env:GITHUB_REPOSITORY `
